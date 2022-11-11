@@ -1,0 +1,219 @@
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
+using System.Drawing;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows.Forms;
+using System.Data.SqlClient;
+
+namespace EMPLOYEEREGISTRATION
+{
+    public partial class Form1 : Form
+    {
+        SqlConnection con = new SqlConnection(@"Data Source=LAPTOP-ORHQM1PR;Initial Catalog=Technocompany;Integrated Security=True");
+        SqlCommand command;
+        SqlDataAdapter adpt;
+        DataTable dt;
+        public Form1()
+        {
+            InitializeComponent();
+            displaydata();
+        }
+
+
+        public void displaydata()
+        {
+            con.Open();
+            adpt = new SqlDataAdapter("select * from employee",con);
+            dt = new DataTable();
+            adpt.Fill(dt);
+            tbList.DataSource = dt;
+            con.Close();
+        }
+
+        public void clear()
+        {
+            tbempcode.Text = "";
+            tbfname.Text = "";
+            tblname.Text = "";
+            tbjob.Text = "";
+            tbmanager.Text = "";
+            tbhd.Text = "";
+            tbsalary.Text = "";
+            tbcom.Text = "";
+            tbdeptcode2.Text = "";
+        }
+
+        private void Form1_Load(object sender, EventArgs e)
+        {
+
+
+        }
+
+        private void addbutton1_Click(object sender, EventArgs e)
+        {
+            con.Open();
+            SqlCommand cmd = con.CreateCommand();
+            cmd.CommandType = CommandType.Text;
+            cmd.CommandText = "Insert Into DEPARTMENT (DEPTCODE, Deptname, LOCATION) VALUES " + "(' " + tbdeptcode1.Text + "',' " + tbdeptname.Text + "', '" + tbloct.Text + "')";
+            cmd.ExecuteNonQuery();
+            MessageBox.Show("Successfully Added!");
+            con.Close();
+            tbdeptcode1.Text = "";
+            tbdeptname.Text = "";
+            tbloct.Text = "";
+            displaydata();
+            clear();
+
+
+
+
+
+        }
+
+        private void dataGridView1_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        {
+
+        }
+
+        private void addbutton2_Click(object sender, EventArgs e)
+        {
+            con.Open();
+            SqlCommand cmd = con.CreateCommand();
+            cmd.CommandType = CommandType.Text;
+            cmd.CommandText = "insert into employee (Empcode, EmpFname, EmpLname, Job,Manager, HireDate, Salary, Commission, DEPTCODE) VALUES " + "(' " + tbempcode.Text + "',' " + tbfname.Text + "', '" + tblname.Text + "',' " + tbjob.Text + "',' " + tbmanager.Text + "'," + "' " + tbhd.Text + "',' " + tbsalary.Text + "',' " + tbcom.Text + "',' " + tbdeptcode2.Text + "')";
+            cmd.ExecuteNonQuery();
+            MessageBox.Show("Successfully Added Name!");
+            con.Close();
+            tbempcode.Text = "";
+            tbfname.Text = "";
+            tblname.Text = "";
+            tbjob.Text = "";
+            tbmanager.Text = "";
+            tbhd.Text = "";
+            tbsalary.Text = "";
+            tbcom.Text = "";
+            tbdeptcode2.Text = "";
+            displaydata();
+            clear();
+
+        }
+
+        private void dataGridView1_CellContentClick_1(object sender, DataGridViewCellEventArgs e)
+        {
+            con.Open();
+
+            string query = "Select * From EMPLOYEEREGISTRATION";
+            SqlDataAdapter da = new SqlDataAdapter(query, con);
+            DataTable dt = new DataTable();
+            da.Fill(dt);
+           
+            tbList.DataSource = dt;
+            con.Close();
+        }
+
+        private void deletebutton2_Click(object sender, EventArgs e)
+        {
+            con.Open();
+            SqlCommand cmd = con.CreateCommand();
+            cmd.CommandType = CommandType.Text;
+            cmd.CommandText = "delete from EMPLOYEE where EmpCode='" + tbempcode.Text +"'";
+            cmd.ExecuteNonQuery();
+            con.Close();
+            MessageBox.Show("Record deleted!");
+            tbempcode.Text = "";
+            tbfname.Text = "";
+            tblname.Text = "";
+            tbjob.Text = "";
+            tbmanager.Text = "";
+            tbhd.Text = "";
+            tbsalary.Text = "";
+            tbcom.Text = "";
+            tbdeptcode2.Text = "";
+            displaydata();
+            clear();
+
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            // SqlConnection conview  = new SqlConnection(@"Data Source = LAPTOP - ORHQM1PR; Initial Catalog = Technocompany; Integrated Security = True"); 
+            //conview.Open();
+            con.Open();
+            string queryview = "select * from department";
+            SqlCommand cmd = new SqlCommand(queryview, con/*conview*/);
+            cmd.ExecuteNonQuery();
+            DataTable dt = new DataTable();
+            dt.Load(cmd.ExecuteReader());
+            tbList.DataSource = dt;
+            con.Close();
+            //conview.Close();
+
+        }
+
+
+
+        private void Deletebutton1_Click(object sender, EventArgs e)
+        {
+            con.Open();
+            SqlCommand cmd = con.CreateCommand();
+            cmd.CommandType = CommandType.Text;
+            cmd.CommandText = "delete from department where Deptcode='" + tbdeptcode1.Text +
+           "'";
+            cmd.ExecuteNonQuery();
+            con.Close();
+            MessageBox.Show("Record deleted!");
+            tbdeptcode1.Text = "";
+            tbdeptname.Text = "";
+            tbloct.Text = "";
+            displaydata();
+            clear();
+
+        }
+
+        //sort 
+        private void bttnsort_Click(object sender, EventArgs e)
+        {
+            
+            con.Open();
+            SqlCommand cmd = con.CreateCommand();
+            cmd.CommandText = "select * from employee Order By EmpFname ASC";
+            if (category.Text == "Department")
+            {
+                cmd.CommandText = "select * from department Order By Deptname ASC";
+            }
+            
+            cmd.ExecuteNonQuery();
+            DataTable dt = new DataTable();
+            SqlDataAdapter dp = new SqlDataAdapter(cmd);
+            dp.Fill(dt);
+            tbList.DataSource = dt;
+            con.Close();
+
+        }
+
+        private void buttonsearch_Click(object sender, EventArgs e)
+        {
+            con.Open();
+            SqlCommand cmd = con.CreateCommand();
+            cmd.CommandText = "SELECT * FROM employee where EmpLname = '" + tbsearch.Text + "' or EmpFname = '" + tbsearch.Text + "'";
+            cmd.ExecuteNonQuery();
+            DataTable dt = new DataTable();
+            SqlDataAdapter dp = new SqlDataAdapter(cmd);
+            dp.Fill(dt);
+            //checker = Convert.ToInt32(dt.Rows.Count.ToString());
+           tbList.DataSource = dt;
+            con.Close();
+            if (Convert.ToInt32(dt.Rows.Count.ToString()) == 0)
+            {
+                MessageBox.Show("Record Not Found", "Access Connect", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                buttonsearch.Text = "";
+                displaydata();
+
+            }
+        }
+    }
+}
